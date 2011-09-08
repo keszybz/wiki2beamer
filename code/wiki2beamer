@@ -99,7 +99,6 @@ r"""{basic}{
 
 autotemplate = [
     ('documentclass', '{beamer}'),
-    ('usepackage', '{listings}'),
     ('usepackage', '{wasysym}'),
     ('usepackage', '{graphicx}'),
     ('date', '{\\today}'),
@@ -449,8 +448,53 @@ def transform(string, state):
 def expand_code_make_defverb(content, name):
     return "\\defverbatim[colored]\\%s{\n%s\n}" % (name, content)
 
-def expand_code_make_lstlisting(content, options):
-    return "\\begin{lstlisting}%s%s\\end{lstlisting}" % (options, content)
+# the highlighter (set by setup_highlighter)
+USE_HIGHLIGHTER = None
+CODE_HEADER = ''
+
+LANGUAGE_OPTION = re.compile(r'\s*\[(?:.*,)?\s*language\s*=\s*([a-zA-Z]+)\s*(?:,.*)?\]\s*')
+def extract_language(options):
+    m = LANGUAGE_OPTION.match(options)
+    if m:
+        return m.group(1), ''
+    else:
+        return None, ''
+
+def setup_highlighter(highlighter):
+    global USE_HIGHLIGHTER
+    if highlighter is None or highlighter == 'listings':
+        global autotemplate
+        autotemplate += ('usepackage', '{listings}')
+        USE_HIGHLIGHTER = 'listings'
+    elif highlighter == 'pygments':
+        global pygments, PYGMENTS_FMTER, CODE_HEADER
+        import pygments, pygments.lexers, pygments.formatters
+        PYGMENTS_FMTER = pygments.formatters.LatexFormatter()
+        CODE_HEADER = PYGMENTS_FMTER.get_style_defs()
+        USE_HIGHLIGHTER = 'pygments'
+    else:
+        raise ValueError('unknown highlighter: %s' % highlighter)
+
+def expand_code_make_listing(content, options):
+    if USE_HIGHLIGHTER == 'listings':
+        fmt = r"\begin{lstlisting}%s%s\end{lstlisting}"
+        return fmt % (options, content)
+    elif USE_HIGHLIGHTER == 'pygments':
+        language, options = extract_language(options)
+        if language is None:
+            try:
+                lexer = pygments.lexers.guess_lexer(content)
+            except pygments.util.ClassNotFound:
+                syntax_error("don't know how to highlight listing "
+                             "(use [language=<language>])", options)
+        else:
+            try:
+                lexer = pygments.lexers.get_lexer_by_name(language)
+            except (pygments.util.OptionError,
+                    pygments.util.ClassNotFound) as err:
+                syntax_error('bad language in listing (%s)' % err, options)
+        return pygments.highlight(content, lexer, PYGMENTS_FMTER)
+    assert False
 
 def expand_code_search_escape_sequences(code):
     open = '1'
@@ -629,7 +673,7 @@ def make_sorted(seq):
     return l
 
 def expand_code_segment(result, codebuffer, state):
-    #treat first line as params for lstlistings
+    #treat first line as params for listings
     lstparams = codebuffer[0]
     codebuffer[0] = ''
  
@@ -680,7 +724,7 @@ def expand_code_segment(result, codebuffer, state):
     return
 
 def expand_code_defverbs(result, state):
-        result[state.code_pos] = result[state.code_pos] + '\n'.join(list(state.defverbs.values())) + '\n'
+    result[state.code_pos] += CODE_HEADER + '\n'.join(state.defverbs.values()) + '\n'
     state.defverbs.clear()
 
 def get_autotemplate_closing():
@@ -1067,8 +1111,14 @@ def main(argv):
     version = "%prog (http://wiki2beamer.sf.net), version: " + VERSIONTAG
 
     parser = optparse.OptionParser(usage="\n  " + usage, version=version)
+    parser.add_option("-c", "--code-highlighter", dest="highlighter", help="use this highlighter to prettify [code]")
     parser.add_option("-o", "--output", dest="output", metavar="FILE", help="write output to FILE instead of stdout")
     opts, args = parser.parse_args()
+
+    try:
+        setup_highlighter(opts.highlighter)
+    except ValueError as e:
+        parser.error(str(e))
 
     if opts.output is not None:
         redirect_stdout(opts.output)
