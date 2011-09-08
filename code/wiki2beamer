@@ -490,7 +490,7 @@ def expand_code_make_listing(content, options):
                              "(use [language=<language>])", options)
         else:
             try:
-                lexer = pygments.lexers.get_lexer_by_name(language)
+                lexer = pygments.lexers.get_lexer_by_name(language.lower())
             except (pygments.util.OptionError,
                     pygments.util.ClassNotFound) as err:
                 syntax_error('bad language in listing (%s)' % err, options)
