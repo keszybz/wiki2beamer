@@ -96,6 +96,14 @@ r"""{basic}{
     commentstyle=\color{gray},%
     stringstyle=\color{magenta}%
 }"""
+pygmentsbasicstyle=\
+r"""{Verbatim}{Verbatim}{%
+    labelposition=topline,%
+    fontsize=\footnotesize,%
+    numbers=left,%
+    numbersep=0.25em,%
+    frame=single%
+}"""
 
 autotemplate = [
     ('documentclass', '{beamer}'),
@@ -474,7 +482,8 @@ def setup_highlighter(highlighter=None):
                          ('lstdefinestyle', lstbasicstyle)]
         USE_HIGHLIGHTER = 'listings'
     elif highlighter == 'pygments':
-        autotemplate += [('usepackage', '{fancyvrb}')]
+        autotemplate += [('usepackage', '{fancyvrb}'),
+                         ('RecustomVerbatimEnvironment', pygmentsbasicstyle)]
         global pygments, PYGMENTS_FMTER, CODE_HEADER
         import pygments, pygments.lexers, pygments.formatters
         PYGMENTS_FMTER = pygments.formatters.LatexFormatter()
