@@ -541,7 +541,7 @@ documentation.
 
 ==== Graphics example ====
 
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 <<<db-rg1024.png,height=0.5\textheight>>>
 [code]>
 
@@ -580,7 +580,7 @@ can look like this:
 To animate a wiki2beamer list, just add a spec after the @*@ or @\#@
 characters:
 
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 * always there (layer 1-4)
 *<2> only on layer 2
 *<2-3> on layer 2-3
@@ -611,7 +611,7 @@ In wiki2beamer this is denotated as:
 [center]>
 
 here's an example:
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 above
 
 +<2>{uncovered}
@@ -638,7 +638,7 @@ In wiki2beamer this is denoted as:
 [center]>
 
 here's the example:
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 above
 
 -<2>{only on 2}
@@ -660,7 +660,7 @@ below
 Animating graphics is nothing special.
 Here is the example:
 
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 +<1>{
 	<<<db-rg1024.png,width=0.4\textwidth>>>
 }
@@ -687,7 +687,7 @@ When talking about code listings, you often want things to appear or
 disappear, step by step. In wiki2beamer, you can do that with a simple
 notation(((Try to do it without wiki2beamer, you'll feel the pain ;) ))).
 
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 <\[code\]
 some normal code above
 \[<2-4>some code only on layer 2-4\]
@@ -698,7 +698,7 @@ some normal code below
 
 ==== Animating code (output) ====
 
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 some normal code above
 [<2-4>some code only on layer 2-4]
 [[<2>some code on layer 2][<4>replaced on layer 4]]
@@ -720,13 +720,13 @@ Tricks for the adept.
 ==== Frame options ====
 
 LaTeX supports giving arguments to opening frames. It looks like:
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 \begin{frame}\[someoption\]
 [code]>
 
 Such options can be added in wiki2beamer by appending them to the frame
 opening:
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 ==== frametitle ====\[someoption]
 [code]>
 
@@ -735,7 +735,7 @@ One example are fragile frames.
 ==== Fragile frames ====
 For some features to work (eg. verbatim content), latex beamer needs a frame
 marked as fragile. In plain \LaTeX this would look like:
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 \begin{frame}\[fragile\]
 ...
 \end{frame}
@@ -744,7 +744,7 @@ marked as fragile. In plain \LaTeX this would look like:
 This can be realized with wiki2beamer by simply appending a @[fragile]@ tag to the
 frame header:
 
-<[code][style=basic]
+<[code][style=basic,language=TeX]
 ==== a fragile frame ====\[fragile\]
 ...
 [code]>
@@ -761,7 +761,7 @@ The same notation that applies for frame options
 can be used with sections. This is used to asign a short name of the section
 for the table of contents.
 
-<[code][style=basic,basicstyle=\tiny\ttfamily]
+<[code][style=basic,basicstyle=\tiny\ttfamily,language=TeX]
 === some section name that is mich too long ===\[long section name\]
 [code]>
 
