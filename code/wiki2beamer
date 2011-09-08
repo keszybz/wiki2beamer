@@ -451,13 +451,20 @@ def expand_code_make_defverb(content, name):
 USE_HIGHLIGHTER = None
 CODE_HEADER = ''
 
-LANGUAGE_OPTION = re.compile(r'\s*\[(?:.*,)?\s*language\s*=\s*([a-zA-Z]+)\s*(?:,.*)?\]\s*')
 def extract_language(options):
-    m = LANGUAGE_OPTION.match(options)
-    if m:
-        return m.group(1), ''
+    options = options.strip()
+    if options[0] != '[' or options[-1] != ']':
+        return None, options
+    optlist = [item.partition('=') for item in options[1:-1].split(',')]
+    for i, parts in enumerate(optlist):
+        head, sep, tail = parts
+        if head.strip() == 'language':
+            language = tail.strip()
+            break
     else:
-        return None, ''
+        language = None
+    reconstructed = [''.join(parts) for parts in optlist[:i] + optlist[i:]]
+    return language, reconstructed
 
 def setup_highlighter(highlighter=None):
     global USE_HIGHLIGHTER
@@ -490,7 +497,10 @@ def expand_code_make_listing(content, options):
             except (pygments.util.OptionError,
                     pygments.util.ClassNotFound) as err:
                 syntax_error('bad language in listing (%s)' % err, options)
-        return pygments.highlight(content, lexer, PYGMENTS_FMTER)
+        highlighted = pygments.highlight(content, lexer, PYGMENTS_FMTER).split('\n')
+        if options:
+            highlighted[0] = highlighted[0].rstrip()[:-1] + ',' + ','.join(options) + ']'
+        return '\n'.join(highlighted)
     assert False
 
 def expand_code_search_escape_sequences(code):
