@@ -460,7 +460,7 @@ def extract_language(options):
     else:
         return None, ''
 
-def setup_highlighter(highlighter):
+def setup_highlighter(highlighter=None):
     global USE_HIGHLIGHTER
     if highlighter is None or highlighter == 'listings':
         global autotemplate

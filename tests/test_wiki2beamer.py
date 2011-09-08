@@ -349,7 +349,6 @@ class TestFileInclusion(unittest.TestCase):
         self.assertEqual(expected, out)
 
     def test_include_file_recursive_detects_loop(self):
-        expected = ["test_file_loop content"]
         self.assertRaises(Exception, include_file_recursive, 'test_file_loop')
 
     def test_include_file_disabled_inside_code(self):
@@ -402,4 +401,5 @@ class TestSelectedFramesMode(unittest.TestCase):
         self.assertEqual(out,expected)
 
 if __name__=="__main__":
+    setup_highlighter()
     unittest.main()
