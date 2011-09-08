@@ -483,11 +483,7 @@ def expand_code_make_listing(content, options):
     elif USE_HIGHLIGHTER == 'pygments':
         language, options = extract_language(options)
         if language is None:
-            try:
-                lexer = pygments.lexers.guess_lexer(content)
-            except pygments.util.ClassNotFound:
-                syntax_error("don't know how to highlight listing "
-                             "(use [language=<language>])", options)
+            lexer = pygments.lexers.TextLexer()
         else:
             try:
                 lexer = pygments.lexers.get_lexer_by_name(language.lower())
