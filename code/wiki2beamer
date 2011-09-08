@@ -102,7 +102,6 @@ autotemplate = [
     ('usepackage', '{wasysym}'),
     ('usepackage', '{graphicx}'),
     ('date', '{\\today}'),
-    ('lstdefinestyle', lstbasicstyle),
     ('titleframe', 'True'),
 ]
 
@@ -464,9 +463,11 @@ def setup_highlighter(highlighter=None):
     global USE_HIGHLIGHTER
     if highlighter is None or highlighter == 'listings':
         global autotemplate
-        autotemplate += ('usepackage', '{listings}')
+        autotemplate += [('usepackage', '{listings}'),
+                         ('lstdefinestyle', lstbasicstyle)]
         USE_HIGHLIGHTER = 'listings'
     elif highlighter == 'pygments':
+        autotemplate += [('usepackage', '{fancyvrb}')]
         global pygments, PYGMENTS_FMTER, CODE_HEADER
         import pygments, pygments.lexers, pygments.formatters
         PYGMENTS_FMTER = pygments.formatters.LatexFormatter()
