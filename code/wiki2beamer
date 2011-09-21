@@ -484,10 +484,10 @@ def setup_highlighter(highlighter=None):
     elif highlighter == 'pygments':
         autotemplate += [('usepackage', '{fancyvrb}'),
                          ('RecustomVerbatimEnvironment', pygmentsbasicstyle)]
-        global pygments, PYGMENTS_FMTER, CODE_HEADER
+        global pygments, CODE_HEADER
         import pygments, pygments.lexers, pygments.formatters
-        PYGMENTS_FMTER = pygments.formatters.LatexFormatter()
-        CODE_HEADER = PYGMENTS_FMTER.get_style_defs()
+        fmter = pygments.formatters.LatexFormatter()
+        CODE_HEADER = fmter.get_style_defs()
         USE_HIGHLIGHTER = 'pygments'
     else:
         raise ValueError('unknown highlighter: %s' % highlighter)
@@ -506,10 +506,9 @@ def expand_code_make_listing(content, options):
             except (pygments.util.OptionError,
                     pygments.util.ClassNotFound) as err:
                 syntax_error('bad language in listing (%s)' % err, options)
-        highlighted = pygments.highlight(content, lexer, PYGMENTS_FMTER).split('\n')
-        if options:
-            highlighted[0] = highlighted[0].rstrip()[:-1] + ',' + ','.join(options) + ']'
-        return '\n'.join(highlighted)
+        fmter = pygments.formatters.LatexFormatter(verboptions=','.join(options))
+        highlighted = pygments.highlight(content, lexer, fmter)
+        return highlighted
     assert False
 
 def expand_code_search_escape_sequences(code):
