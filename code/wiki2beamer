@@ -508,6 +508,18 @@ def expand_code_make_listing(content, options):
                 syntax_error('bad language in listing (%s)' % err, options)
         fmter = pygments.formatters.LatexFormatter(verboptions=','.join(options))
         highlighted = pygments.highlight(content, lexer, fmter)
+        framed = any(opt.startswith('frame') for opt in options)
+        if not framed:
+            # Verbatim use the full text width. BVerbatim uses just the width
+            # of the longest line (or the explicit width given with 'boxwidth=').
+            # The page width that is used is not the text width at the point
+            # where the code is inserted, but before the start of the document.
+            # Therefore, [code] using Verbatim (or lstlisting) environments is
+            # incompatible with [columns]. The solutions is to replace Verbatim with
+            # BVerbatim by default.
+            highlighted = highlighted\
+                .replace(r'\begin{Verbatim}', r'\begin{BVerbatim}', 1) \
+                .replace(r'\end{Verbatim}', r'\end{BVerbatim}', 1)
         return highlighted
     assert False
 
